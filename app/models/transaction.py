@@ -13,7 +13,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
 
-class Trasaction(Base):
+class Transaction(Base):
     __tablename__ = "transactions"
     
     id: Mapped[int] = mapped_column(
