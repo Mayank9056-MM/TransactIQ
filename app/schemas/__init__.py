@@ -7,6 +7,7 @@ from .job import (
 )
 from .job_summary import JobSummaryResponse
 from .transaction import TransactionResponse
+from .results import JobResultsResponse, CategoryStat
 
 __all__ = [
     "JobStatus",
@@ -15,5 +16,7 @@ __all__ = [
     "JobStatusResponse",
     "JobListResponse",
     "TransactioinResponse",
-    "JobSummaryResponse"
+    "JobSummaryResponse",
+    "JobResultsResponse",
+    "CategoryStat"
 ]
