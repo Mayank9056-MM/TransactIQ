@@ -11,4 +11,4 @@ class JobSummaryResponse(BaseSchema):
     
     narrative: str
     
-    rist_level: str
+    risk_level: str
