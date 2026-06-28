@@ -21,6 +21,8 @@ class Job(Base):
     
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
     
+    file_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    
     status: Mapped[JobStatus] = mapped_column(
         SqlEnum(JobStatus),
         default=JobStatus.PENDING,
@@ -43,7 +45,7 @@ class Job(Base):
         nullable=True
     )
     
-    transactons: Mapped[list["Transaction"]] = relationship(
+    transactions: Mapped[list["Transaction"]] = relationship(
         back_populates="job",
         cascade="all, delete-orphan"
     )
