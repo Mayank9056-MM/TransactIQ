@@ -12,7 +12,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 VALID_CATEGORIES = frozenset(
-    ["food","shopping","Travel","Transport","Utilities","Cash Withdrawl","Entertainment","Other"]
+    ["Food","Shopping","Travel","Transport","Utilities","Cash Withdrawal","Entertainment","Other"]
 )
 
 _GEMINI_URL = (
@@ -29,7 +29,7 @@ def _call_gemini(prompt: str, retries: int = 3) -> str:
             with httpx.Client(timeout=30) as client:
                 resp = client.post(url, json=payload)
                 resp.raise_for_status()
-                return resp.join()["candidates"][0]["content"]["parts"][0]["text"]
+                return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
         except Exception as exc:
             if attempt == retries - 1:
                 raise
@@ -42,7 +42,7 @@ def _call_gemini(prompt: str, retries: int = 3) -> str:
 def _extract_json(text: str) -> dict | list:
     """Strip markdown fences and parse JSON."""
     text = re.sub(r"^```(?:json)?\s","",text.strip(),flags=re.MULTILINE)
-    text = re.sub(r"\s*```$","",text.strip(),flagsl=re.MULTILINE)
+    text = re.sub(r"\s*```$","",text.strip(),flags=re.MULTILINE)
     return json.loads(text.strip())
 
 # Public API
