@@ -8,7 +8,7 @@ from app.db.database import Base, engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.create_all(bind=engine)
     yield
     
 app = FastAPI(
