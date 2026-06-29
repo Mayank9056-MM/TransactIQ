@@ -5,10 +5,10 @@ from datetime import date
 
 import pandas as pd
 
-_DATE_FORMATS = ("%d-%m%Y","%Y/%m/%d","%m/%d/%Y")
+_DATE_FORMATS = ("%d-%m-%Y","%Y/%m/%d","%m/%d/%Y")
 
 REQUIRED_COLUMNS = {
-    "txn_id","date","merchants","amount",
+    "txn_id","date","merchant","amount",
     "currency","status","category","account_id","notes"
 }
 
@@ -18,7 +18,7 @@ def _parse_date(value: str) -> date | None:
     for fmt in _DATE_FORMATS:
         try:
             from datetime import datetime
-            return datetime.strftime(value,fmt).date()
+            return datetime.strptime(value,fmt).date()
         except ValueError:
             continue
     return None

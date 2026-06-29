@@ -1,22 +1,71 @@
-version: "3.9"
-
 services:
-  postgres:
+
+  db:
     image: postgres:16-alpine
-    container_name: transactiq-db
-
     restart: unless-stopped
-
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: transactiq
+      POSTGRES_PASSWORD: transactiq
       POSTGRES_DB: transactiq
 
     ports:
       - "5432:5432"
-
+      
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transactiq"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    command: >
+      uv run uvicorn app.main:app
+        --host 0.0.0.0
+        --port 8000
+        --reload
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - uploads:/app/uploads
+      - .:/app          
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build: .
+    command: >
+      uv run celery -A app.workers.celery_app worker
+        --loglevel=info
+        --concurrency=2
+        -E
+    env_file: .env
+    volumes:
+      - uploads:/app/uploads 
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+  uploads:
