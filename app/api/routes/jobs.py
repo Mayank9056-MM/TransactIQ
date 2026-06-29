@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.core.config import Settings
+from app.core.config import settings
 from app.models.job import Job, JobStatus
 from app.models.job_summary import JobSummary
 from app.models.transaction import Transaction
@@ -68,7 +68,7 @@ def upload_csv(
         )
         
     # Persist file
-    upload_dir = Path(Settings.UPLOAD_DIR)
+    upload_dir = Path(settings.UPLOAD_DIR)
     upload_dir.mkdir(parents=True, exist_ok=True)
     safe_name=f"{uuid.uuid4().hex}_{Path(file.filename).name}"
     file_path = upload_dir / safe_name
@@ -165,7 +165,7 @@ def list_jobs(
     status: JobStatus | None = Query(default=None, description="Filter by job status"),
     db: Session = Depends(get_db)
 ) -> list[JobListResponse]:
-    stmt = select(Job).order_by(Job.created_at_desc())
+    stmt = select(Job).order_by(Job.created_at.desc())
     if status:
         stmt = stmt.where(Job.status == status)
     jobs = db.execute(stmt).scalars().all()
