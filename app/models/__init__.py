@@ -1,10 +1,10 @@
 from .job import Job
 from .job_summary import JobSummary
-from .transaction import Trasaction
+from .transaction import Transaction
 
 
 __all__ = [
     "Job",
-    "Trasaction",
+    "Transaction",
     "JobSummary"
 ]
