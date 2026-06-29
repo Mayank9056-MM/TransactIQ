@@ -69,6 +69,21 @@ def process_job(self, job_id: int) -> None:
         # Persist transactions
         txn_objects: list[Transaction] = []
         for _, row in df.iterrows():
+            
+            
+            is_anomaly = row.get("is_anomaly")
+            llm_failed = row.get("llm_failed")
+            
+            if pd.isna(is_anomaly):
+                is_anomaly = False
+            else:
+                is_anomaly = bool(is_anomaly)
+                
+            if pd.isna(llm_failed):
+                llm_failed = False
+            else:
+                llm_failed = bool(llm_failed)
+            
             txn_objects.append(
                 Transaction(
                     job_id=job_id,
@@ -81,10 +96,10 @@ def process_job(self, job_id: int) -> None:
                     category=str(row["category"]),
                     account_id=str(row["account_id"]),
                     notes=_str_or_none(row["notes"]),
-                    is_anomaly=bool(row.get("is_anomaly", False)),
+                    is_anomaly=is_anomaly,
                     anomaly_reason=_str_or_none(row.get("anomaly_reason")),
                     llm_category=_str_or_none(row.get("llm_category")),
-                    llm_failed=bool(row.get("llm_failed", False))
+                    llm_failed=llm_failed
                 )
             )
         db.bulk_save_objects(txn_objects)
